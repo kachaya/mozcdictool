@@ -179,13 +179,9 @@ ADDITIONAL = {}
   sudachi_surface = row[4].gsub(/\\u([\da-fA-F]{4})/) { [$1].pack('H*').unpack('n*').pack('U*') }
   sudachi_reading = row[11]
 
-  # 表記
-  # sudachi_surface = sudachi_surface.gsub('’','\'')
-  # sudachi_surface = sudachi_surface.gsub('−','-')
-  # sudachi_surface = sudachi_surface.gsub('‐','-')
-  # 表記がASCII文字のみならばスキップ
-  next if sudachi_surface == sudachi_surface.scan(/[\p{ASCII}]/).join
-  mozc_surface = sudachi_surface
+  # 連接IDの推定が必要なものはスキップ
+  next if sudachi_left_id <= 0
+  next if sudachi_right_id <= 0
 
   # 読み
   # Sudachiの読みに片仮名以外を含むならばスキップ
@@ -193,9 +189,17 @@ ADDITIONAL = {}
 
   mozc_reading = sudachi_reading.tr('ァ-ヴ', 'ぁ-ゔ')
 
-  # 連接IDの推定が必要なものはスキップ
-  next if sudachi_left_id <= 0
-  next if sudachi_right_id <= 0
+  # 表記
+  # 表記がASCII文字のみならばスキップ
+  next if sudachi_surface == sudachi_surface.scan(/[\p{ASCII}]/).join
+
+  # 単語でなければスキップ
+  if sudachi_surface =~ /[^[\-_&.0-0A-Za-z]\p{Hiragana}\p{Katakana}ー\p{Han}]/
+    # STDERR.puts "non-word:#{sudachi_surface}"
+    next
+  end
+
+  mozc_surface = sudachi_surface
 
   # 左連接ID
   mozc_left_id = SUDACHI_ID_MAP[sudachi_left_id]
