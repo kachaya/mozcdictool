@@ -194,7 +194,7 @@ ADDITIONAL = {}
   next if sudachi_surface == sudachi_surface.scan(/[\p{ASCII}]/).join
 
   # 単語でなければスキップ
-  if sudachi_surface =~ /[^[\-_&.0-0A-Za-z]\p{Hiragana}\p{Katakana}ー\p{Han}]/
+  if sudachi_surface =~ /[^[\-_&.0-9A-Za-z]\p{Hiragana}\p{Katakana}ー\p{Han}]/
     # STDERR.puts "non-word:#{sudachi_surface}"
     next
   end
